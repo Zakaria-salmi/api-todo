@@ -2,8 +2,13 @@ const express = require('express');
 const app = express();
 
 app.use(express.json());
+app.use(express.static(__dirname));
 
 const tasks = [];
+
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/frontend/index.html');
+});
 
 app.get('/tasks', (req, res) => {
   try {
@@ -19,7 +24,7 @@ app.post('/tasks', (req, res) => {
 
     const data = req.body;
     const newTask = {
-      id: crypto.randomUUID(),
+      id: tasks.length + 1,
       name: data.name,
       completed: data.completed
     };
@@ -64,6 +69,6 @@ app.delete('/tasks/:id', (req, res) => {
   }
 });
  
-app.listen(8000, () => {
-  console.log(`Server is listening at http://localhost:8000`);
+app.listen(8001, () => {
+  console.log(`Server is listening at http://localhost:8001`);
 });
