@@ -5,6 +5,7 @@ app.use(express.json());
 app.use(express.static(__dirname + "/frontend"));
 
 const tasks = [];
+let index = 0;
 
 app.get("/", (req, res) => {
     res.sendFile(__dirname + "/frontend/index.html");
@@ -25,7 +26,7 @@ app.post("/tasks", (req, res) => {
     try {
         const data = req.body;
         const newTask = {
-            id: tasks.length + 1,
+            id: index++,
             name: data.name,
             completed: data.completed,
         };
