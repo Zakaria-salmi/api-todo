@@ -4,7 +4,6 @@ const addTaskButton = document.getElementById("addTaskButton");
 
 let tasks = [];
 
-// Fetch existing tasks from the API
 fetch("/tasks")
     .then((response) => response.json())
     .then((fetchTasks) => {
@@ -14,7 +13,6 @@ fetch("/tasks")
     })
     .catch((error) => console.error("Error fetching tasks:", error));
 
-// Add a new task
 addTaskButton.addEventListener("click", () => {
     if (newTaskInput.value.trim() !== "") {
         const newTask = {
@@ -22,7 +20,6 @@ addTaskButton.addEventListener("click", () => {
             completed: false,
         };
 
-        // Send the new task to the API
         fetch("/tasks", {
             method: "POST",
             headers: {
@@ -40,7 +37,6 @@ addTaskButton.addEventListener("click", () => {
     }
 });
 
-// Render tasks on the frontend
 function renderTasks(tasks) {
     taskList.innerHTML = "";
 
@@ -53,12 +49,10 @@ function renderTasks(tasks) {
 
         li.appendChild(span);
 
-        // Toggle the completed state
         li.addEventListener("click", (e) => {
             toggleTaskCompletion(task.id);
         });
 
-        // Delete button
         const deleteButton = document.createElement("button");
         deleteButton.textContent = "X";
         deleteButton.addEventListener("click", (e) => {
@@ -66,20 +60,16 @@ function renderTasks(tasks) {
             deleteTask(task.id);
         });
 
-        // Append the delete button to the list item
         li.appendChild(deleteButton);
 
-        // Add the list item to the list
         taskList.appendChild(li);
 
-        // Mark the task as completed if necessary
         if (task.completed) {
             span.classList.add("completed");
         }
     });
 }
 
-// Toggle task completion state
 function toggleTaskCompletion(taskId) {
     const task = tasks.find((task) => task.id === taskId);
     fetch(`/tasks/${taskId}`, {
@@ -105,7 +95,6 @@ function toggleTaskCompletion(taskId) {
         );
 }
 
-// Delete task
 function deleteTask(taskId) {
     fetch(`/tasks/${taskId}`, {
         method: "DELETE",

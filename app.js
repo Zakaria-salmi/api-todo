@@ -13,7 +13,16 @@ app.get("/", (req, res) => {
 
 app.get("/tasks", (req, res) => {
     try {
-        res.json(tasks);
+        const { completed } = req.query;
+        let filteredTasks = tasks;
+
+        if (completed) {
+            filteredTasks = tasks.filter(
+                (task) => task.completed === completed
+            );
+        }
+
+        res.send(filteredTasks);
     } catch (error) {
         console.error(error);
         res.status(500).json({
@@ -49,6 +58,24 @@ app.put("/tasks/:id", (req, res) => {
         try {
             task.name = req.body.name;
             task.completed = req.body.completed;
+            res.json(task);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({
+                message: "Erreur lors de la mise à jour de la tâche",
+            });
+        }
+    }
+});
+
+app.patch("/tasks/:id/completed", (req, res) => {
+    const id = parseInt(req.params.id);
+    const task = tasks.find((task) => task.id === id);
+    if (!task) {
+        res.status(404).json({ message: "Tâche non trouvée" });
+    } else {
+        try {
+            task.completed = !task.completed;
             res.json(task);
         } catch (error) {
             console.error(error);
