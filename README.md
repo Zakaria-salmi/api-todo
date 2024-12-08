@@ -12,89 +12,173 @@ Cette API, développée avec **Express.js**, permet de gérer une liste de tâch
 
 ## Pré-requis
 
-- **Node.js** et **npm** installés sur votre machine.
-- Une fois le projet téléchargé, exécutez `npm install` pour installer les dépendances.
+-   **Node.js** et **npm** installés sur votre machine (pour le développement local sans Docker).
+-   **Docker** et **Docker Compose** installés sur votre machine (pour l'utilisation avec Docker).
+-   Une fois le projet téléchargé, exécutez `npm install` pour installer les dépendances (uniquement pour le développement local).
 
 ## Installation
 
+### Option 1 : Installation locale
+
 1. Clonez ce dépôt :
+
     ```bash
     git clone https://github.com/votre-utilisateur/todo-api.git
     ```
 
 2. Accédez au répertoire du projet :
+
     ```bash
     cd todo-api
     ```
 
 3. Installez les dépendances :
+
     ```bash
     npm install
     ```
 
 4. Démarrez le serveur :
+
     ```bash
     node app.js
     ```
 
 5. Le serveur sera lancé à l'adresse : `http://localhost:8001`
 
+### Option 2 : Installation avec Docker
+
+1. Clonez ce dépôt :
+
+    ```bash
+    git clone https://github.com/Zakaria-salmi/api-todo.git
+    ```
+
+2. Accédez au répertoire du projet :
+
+    ```bash
+    cd todo-api
+    ```
+
+3. Lancez les conteneurs avec Docker Compose :
+
+    ```bash
+    docker-compose up -d
+    ```
+
+4. L'application sera disponible sur :
+    - API : `http://localhost:8001`
+    - PgAdmin : `http://localhost:5050`
+
+## Configuration Docker
+
+Le projet utilise trois services Docker :
+
+### 1. API (Node.js)
+
+-   Port : 8001
+-   Variables d'environnement configurables dans `docker-compose.yml`
+-   Le code source est monté en volume pour le développement
+
+### 2. Base de données PostgreSQL
+
+-   Port : 5432
+-   Credentials par défaut :
+    -   User : todoapp
+    -   Password : todopass
+    -   Database : tododb
+-   Les données sont persistées dans un volume Docker
+
+### 3. PgAdmin
+
+-   Port : 5050
+-   Credentials par défaut :
+    -   Email : admin@admin.com
+    -   Password : admin
+-   Interface web pour gérer la base de données
+
+## Commandes Docker utiles
+
+```bash
+# Démarrer les services
+docker-compose up -d
+
+# Arrêter les services
+docker-compose down
+
+# Voir les logs
+docker-compose logs -f
+
+# Reconstruire les images
+docker-compose build
+
+# Supprimer les volumes (attention : perte des données)
+docker-compose down -v
+```
+
 ## Points de terminaison (Endpoints)
 
 ### 1. **Récupérer la page d'accueil**
-   - **URL** : `/`
-   - **Méthode** : `GET`
-   - Renvoie la page HTML située dans le répertoire `frontend`.
+
+-   **URL** : `/`
+-   **Méthode** : `GET`
+-   Renvoie la page HTML située dans le répertoire `frontend`.
 
 ### 2. **Récupérer toutes les tâches**
-   - **URL** : `/tasks`
-   - **Méthode** : `GET`
-   - **Query paramètre (optionnel)** :
-     - `completed` : Filtrer les tâches par leur état (`true` ou `false`).
-   - **Exemple** :
-     - `/tasks?completed=true` renvoie les tâches complétées.
+
+-   **URL** : `/tasks`
+-   **Méthode** : `GET`
+-   **Query paramètre (optionnel)** :
+    -   `completed` : Filtrer les tâches par leur état (`true` ou `false`).
+-   **Exemple** :
+    -   `/tasks?completed=true` renvoie les tâches complétées.
 
 ### 3. **Créer une nouvelle tâche**
-   - **URL** : `/tasks`
-   - **Méthode** : `POST`
-   - **Corps de la requête (JSON)** :
-     ```json
-     {
-       "name": "Nom de la tâche",
-       "completed": false
-     }
-     ```
-   - Renvoie la tâche nouvellement créée avec son `id`.
+
+-   **URL** : `/tasks`
+-   **Méthode** : `POST`
+-   **Corps de la requête (JSON)** :
+    ```json
+    {
+        "name": "Nom de la tâche",
+        "completed": false
+    }
+    ```
+-   Renvoie la tâche nouvellement créée avec son `id`.
 
 ### 4. **Mettre à jour une tâche existante**
-   - **URL** : `/tasks/:id`
-   - **Méthode** : `PUT`
-   - **Paramètre** : `id` de la tâche à mettre à jour.
-   - **Corps de la requête (JSON)** :
-     ```json
-     {
-       "name": "Nouveau nom de la tâche",
-       "completed": true
-     }
-     ```
+
+-   **URL** : `/tasks/:id`
+-   **Méthode** : `PUT`
+-   **Paramètre** : `id` de la tâche à mettre à jour.
+-   **Corps de la requête (JSON)** :
+    ```json
+    {
+        "name": "Nouveau nom de la tâche",
+        "completed": true
+    }
+    ```
 
 ### 5. **Marquer une tâche comme complétée ou non**
-   - **URL** : `/tasks/:id/completed`
-   - **Méthode** : `PATCH`
-   - **Paramètre** : `id` de la tâche à mettre à jour.
-   - Cette requête bascule l'état `completed` de la tâche.
+
+-   **URL** : `/tasks/:id/completed`
+-   **Méthode** : `PATCH`
+-   **Paramètre** : `id` de la tâche à mettre à jour.
+-   Cette requête bascule l'état `completed` de la tâche.
 
 ### 6. **Supprimer une tâche**
-   - **URL** : `/tasks/:id`
-   - **Méthode** : `DELETE`
-   - **Paramètre** : `id` de la tâche à supprimer.
-   - Renvoie un message de confirmation en cas de succès.
+
+-   **URL** : `/tasks/:id`
+-   **Méthode** : `DELETE`
+-   **Paramètre** : `id` de la tâche à supprimer.
+-   Renvoie un message de confirmation en cas de succès.
 
 ## Exemple d'utilisation
 
 ### 1. Créer une tâche
 
 **Requête :**
+
 ```bash
 curl -X POST http://localhost:8001/tasks \
 -H "Content-Type: application/json" \
@@ -102,37 +186,40 @@ curl -X POST http://localhost:8001/tasks \
 ```
 
 **Réponse :**
+
 ```json
 {
-  "id": 0,
-  "name": "Apprendre Node.js",
-  "completed": false
+    "id": 0,
+    "name": "Apprendre Node.js",
+    "completed": false
 }
 ```
 
 ### 2. Récupérer toutes les tâches
 
 **Requête :**
+
 ```bash
 curl http://localhost:8001/tasks
 ```
 
 **Réponse :**
+
 ```json
 [
-  {
-    "id": 0,
-    "name": "Apprendre Node.js",
-    "completed": false
-  }
+    {
+        "id": 0,
+        "name": "Apprendre Node.js",
+        "completed": false
+    }
 ]
 ```
 
 ## Technologies utilisées
 
-- **Node.js**
-- **Express.js**
-- **HTML/CSS** (fichiers statiques dans le dossier `frontend`)
+-   **Node.js**
+-   **Express.js**
+-   **HTML/CSS** (fichiers statiques dans le dossier `frontend`)
 
 ## Lancement du serveur
 
@@ -141,7 +228,3 @@ node app.js
 ```
 
 L'API est disponible à l'adresse `http://localhost:8001`.
-
-## Licence
-
-Ce projet est sous licence MIT.

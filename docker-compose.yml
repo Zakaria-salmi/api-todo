@@ -1,0 +1,54 @@
+version: "3.8"
+services:
+    api:
+        build: .
+        ports:
+            - "8001:8001"
+        environment:
+            DB_USER: todoapp
+            DB_HOST: db
+            DB_NAME: tododb
+            DB_PASSWORD: todopass
+            DB_PORT: 5432
+        depends_on:
+            - db
+        volumes:
+            - .:/usr/src/app
+            - /usr/src/app/node_modules
+        networks:
+            - todo_network
+
+    db:
+        image: postgres:14
+        restart: always
+        environment:
+            POSTGRES_USER: todoapp
+            POSTGRES_PASSWORD: todopass
+            POSTGRES_DB: tododb
+        ports:
+            - "5432:5432"
+        volumes:
+            - ./db-init:/docker-entrypoint-initdb.d
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - todo_network
+
+    pgadmin:
+        image: dpage/pgadmin4
+        restart: always
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@admin.com
+            PGADMIN_DEFAULT_PASSWORD: admin
+        ports:
+            - "5050:80"
+        depends_on:
+            - db
+        networks:
+            - todo_network
+
+volumes:
+    postgres_data:
+
+networks:
+    todo_network:
+        driver: bridge
